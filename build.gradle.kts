@@ -364,7 +364,7 @@ if (canPublish) {
     }
 
     // Mod Platforms
-    if (listOf("MODRINTH_TOKEN").any { System.getenv().containsKey(it) }) {
+    if (listOf("CURSEFORGE_TOKEN", "MODRINTH_TOKEN").any { System.getenv().containsKey(it) }) {
         publishMods {
             changelog.set(changelogTextProvider)
             type.set(when(properties["release_type"]) {
@@ -376,7 +376,7 @@ if (canPublish) {
             modLoaders.add("quilt")
             file.set(tasks.named<RemapJarTask>("remapJar").get().archiveFile)
 
-            /*if (System.getenv().containsKey("CURSEFORGE_TOKEN") || dryRun.get()) {
+            if (System.getenv().containsKey("CURSEFORGE_TOKEN") || dryRun.get()) {
                 curseforge {
                     projectId.set("378036")
                     accessToken.set(System.getenv("CURSEFORGE_TOKEN"))
@@ -396,7 +396,6 @@ if (canPublish) {
                     }
                 }
             }
-            */
             if (System.getenv().containsKey("MODRINTH_TOKEN") || dryRun.get()) {
                 modrinth {
                     accessToken.set(System.getenv("MODRINTH_TOKEN"))
