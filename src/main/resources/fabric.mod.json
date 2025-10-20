@@ -2,15 +2,16 @@
 	"schemaVersion": 1,
 	"id": "whereisit",
 	"version": "${version}",
-	"name": "Where Is It",
-	"description": "Find items in nearby inventories.",
+	"name": "Where Is It (Unofficial port)",
+	"description": "Find items in nearby inventories. Unofficial port Where Is It.",
 	"authors": [
-		"JackFred"
+		"JackFred",
+        "ponuing"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/mod/where-is-it",
-		"sources": "https://github.com/JackFred2/WhereIsIt",
-		"issues": "https://github.com/JackFred2/WhereIsIt/issues"
+		"homepage": "https://modrinth.com/mod/where-is-it-port",
+		"sources": "https://github.com/ponuing/WhereIsIt",
+		"issues": "https://github.com/ponuing/WhereIsIt/issues"
 	},
 	"license": "LGPL-3.0-only",
     "mixins": [

@@ -340,7 +340,6 @@ if (canPublish) {
         }
     }
 
-    // GitHub Release
     tasks.named<GithubReleaseTask>("githubRelease") {
         generateChangelogTask?.let { dependsOn(it) }
 
@@ -401,7 +400,7 @@ if (canPublish) {
             if (System.getenv().containsKey("MODRINTH_TOKEN") || dryRun.get()) {
                 modrinth {
                     accessToken.set(System.getenv("MODRINTH_TOKEN"))
-                    projectId.set("FCTyEqkn")
+                    projectId.set("Kaux9SLz")
                     properties["game_versions_mr"]!!.toString().split(",").forEach {
                         minecraftVersions.add(it)
                     }
