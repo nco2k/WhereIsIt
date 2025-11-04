@@ -378,7 +378,7 @@ if (canPublish) {
 
             if (System.getenv().containsKey("CURSEFORGE_TOKEN") || dryRun.get()) {
                 curseforge {
-                    projectId.set("378036")
+                    projectId.set("1368907")
                     accessToken.set(System.getenv("CURSEFORGE_TOKEN"))
                     properties["game_versions_curse"]!!.toString().split(",").forEach {
                         minecraftVersions.add(it)
