@@ -40,19 +40,24 @@ public abstract class LevelRendererMixin {
 
         float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(true);
 
-        // Debug message
-        // System.out.println("Rendering " + Rendering.getResults().size() + " boxes with RGB animation!");
-
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glDepthFunc(GL11.GL_ALWAYS);
 
+        // Creating empty PoseStack
         PoseStack poseStack = new PoseStack();
+
         MultiBufferSource.BufferSource bufferSource =
                 net.minecraft.client.Minecraft.getInstance()
                         .renderBuffers()
                         .bufferSource();
 
-        Rendering.renderBoxes(poseStack, bufferSource, camera, tickDelta);
+        // Rendering boxes
+        Rendering.renderBoxes(bufferSource, camera, tickDelta);
+
+        // Rendering labels
+        Rendering.renderLabels(poseStack, camera, bufferSource);
+
+        bufferSource.endBatch();
 
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
