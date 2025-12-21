@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import red.jackf.whereisit.WhereIsIt;
 import red.jackf.whereisit.api.SearchRequest;
@@ -26,7 +26,7 @@ public final class WhereIsItJEIPlugin implements IModPlugin {
 
     @Override
     @NotNull
-    public ResourceLocation getPluginUid() {
+    public Identifier getPluginUid() {
         return WhereIsIt.id("stack_grabber");
     }
 

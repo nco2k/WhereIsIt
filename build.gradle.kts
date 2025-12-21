@@ -9,7 +9,7 @@ import red.jackf.UpdateDependenciesTask
 
 plugins {
     id("maven-publish")
-    id("fabric-loom") version "1.11-SNAPSHOT"
+    id("fabric-loom") version "1.14-SNAPSHOT"
     id("com.github.breadmoirai.github-release") version "2.4.1"
     id("org.ajoberstar.grgit") version "5.2.1"
     id("me.modmuss50.mod-publish-plugin") version "0.3.3"
@@ -207,7 +207,7 @@ tasks.withType<JavaCompile>().configureEach {
         "-Xmaxerrs", "1000"
     ))
 
-    val sourceSetName = this.name.replace("compile", "").replace("Java", "").toLowerCase()
+    val sourceSetName = this.name.replace("compile", "").replace("Java", "").lowercase()
     if (sourceSetName.isNotEmpty()) {
         options.compilerArgumentProviders.add(CommandLineArgumentProvider {
             listOf(

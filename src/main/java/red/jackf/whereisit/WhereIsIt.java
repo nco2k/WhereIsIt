@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import red.jackf.whereisit.command.WhereIsCommand;
 import red.jackf.whereisit.config.WhereIsItConfig;
@@ -19,8 +19,8 @@ import red.jackf.whereisit.util.RateLimiter;
 public class WhereIsIt implements ModInitializer {
     public static final Logger LOGGER = LogUtils.getLogger();
 	public static final String MODID = "whereisit";
-	public static ResourceLocation id(String path) {
-		return ResourceLocation.fromNamespaceAndPath(MODID, path);
+	public static Identifier id(String path) {
+		return Identifier.fromNamespaceAndPath(MODID, path);
 	}
 
 	@Override

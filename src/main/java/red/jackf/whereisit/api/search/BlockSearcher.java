@@ -3,7 +3,7 @@ package red.jackf.whereisit.api.search;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -25,15 +25,15 @@ public interface BlockSearcher {
     /**
      * Called before any other events. Use this to override other custom handlers.
      */
-    ResourceLocation OVERRIDE = WhereIsIt.id("override");
+    Identifier OVERRIDE = WhereIsIt.id("override");
     /**
      * Called before the fallback transfer API handler. Use this for custom behaviors on blocks.
      */
-    ResourceLocation DEFAULT = Event.DEFAULT_PHASE;
+    Identifier DEFAULT = Event.DEFAULT_PHASE;
     /**
      * Used for the transfer API fallback. Not recommended for general use.
      */
-    ResourceLocation FALLBACK = WhereIsIt.id("fallback");
+    Identifier FALLBACK = WhereIsIt.id("fallback");
 
     Event<BlockSearcher> EVENT = EventFactory.createWithPhases(BlockSearcher.class, handlers -> ((request, player, level, state, pos) -> {
         for (BlockSearcher handler : handlers) {

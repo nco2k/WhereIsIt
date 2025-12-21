@@ -3,13 +3,10 @@ package red.jackf.whereisit.client;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
 import dev.isxander.yacl3.gui.image.ImageRenderer;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import red.jackf.jackfredlib.api.colour.Colour;
 import red.jackf.jackfredlib.api.colour.Colours;
 import red.jackf.jackfredlib.api.colour.Gradient;
@@ -24,14 +21,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.minecraft.SharedConstants.TICKS_PER_SECOND;
 import static net.minecraft.network.chat.Component.translatable;
 
 public class WhereIsItConfigScreenBuilder {
-    private static final ResourceLocation COLOUR_PREVIEW_BORDER = WhereIsIt.id("colour_preview_border");
+    private static final Identifier COLOUR_PREVIEW_BORDER = WhereIsIt.id("colour_preview_border");
 
     public static Screen build(Screen parent) {
         var instance = WhereIsItConfig.INSTANCE;

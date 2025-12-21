@@ -1,6 +1,7 @@
 package red.jackf.whereisit.client.render;
 
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.InvalidateRenderStateCallback;
 import net.minecraft.client.Camera;
@@ -10,7 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -112,12 +113,12 @@ public class Rendering {
     public static void renderLabels(PoseStack ignoredPoseStack, Camera camera, MultiBufferSource consumers) {
         if (scheduledLabels.isEmpty()) return;
 
-        Vec3 camPos = camera.getPosition();
+        Vec3 camPos = camera.position();
 
         // Create a PoseStack WITH CAMERA ROTATIONS
         PoseStack pose = new PoseStack();
-        pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(camera.getYRot() + 180f));
+        pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(camera.yRot() + 180f));
 
         scheduledLabels.stream()
                 .sorted(Comparator.comparingDouble(label -> -camPos.distanceToSqr(label.position)))
@@ -135,8 +136,8 @@ public class Rendering {
         final double zOffset = label.position.z - camPos.z;
         pose.translate(xOffset, yOffset, zOffset);
 
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-camera.getYRot()));
-        pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(-camera.yRot()));
+        pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
 
         // Scale
         float scale = 0.025f * WhereIsItConfig.INSTANCE.instance().getClient().containerNameLabelScale;
@@ -147,7 +148,7 @@ public class Rendering {
         float x = -width / 2f;
 
         // Background
-        VertexConsumer bgBuffer = consumers.getBuffer(RenderType.textBackgroundSeeThrough());
+        VertexConsumer bgBuffer = consumers.getBuffer(RenderTypes.textBackgroundSeeThrough());
         int bgColour = ((int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25F) * 255F)) << 24;
         bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
         bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
@@ -172,14 +173,14 @@ public class Rendering {
     public static void renderBoxes(MultiBufferSource.BufferSource bufferSource, Camera camera, float tickDelta) {
         if (results.isEmpty()) return;
 
-        Vec3 camPos = camera.getPosition();
+        Vec3 camPos = camera.position();
 
         // Create a new PoseStack and apply camera rotation
         PoseStack pose = new PoseStack();
-        pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(camera.getYRot() - 180f));
+        pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(camera.yRot() - 180f));
 
-        VertexConsumer consumer = bufferSource.getBuffer(RenderType.debugQuads());
+        VertexConsumer consumer = bufferSource.getBuffer(RenderTypes.debugQuads());
 
         // Get progress for RGB animation
         float progress = getRenderingProgress(tickDelta);
@@ -207,7 +208,7 @@ public class Rendering {
             }
         }
 
-        bufferSource.endBatch(RenderType.debugQuads());
+        bufferSource.endBatch(RenderTypes.debugQuads());
     }
 
     // Rendering progress for fadeout

@@ -12,7 +12,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -60,15 +60,15 @@ public class WhereIsCommand {
                 }));
 
         var tagArg = literal("tag").then(
-            argument("tag_id", ResourceLocationArgument.id())
+            argument("tag_id", IdentifierArgument.id())
                 .suggests(suggestsRegistryTag(Registries.ITEM))
                 .redirect(root, ctx -> {
-                    var resLoc = ResourceLocationArgument.getId(ctx, "tag_id");
+                    var resLoc = IdentifierArgument.getId(ctx, "tag_id");
                     var tag = TagKey.create(Registries.ITEM, resLoc);
                     ESD.getCustom(ctx, CommandCriteria.DEFINITION).addCriterion(new ItemTagCriterion(tag));
                     return ctx.getSource();
                 }).executes(ctx -> {
-                    var resLoc = ResourceLocationArgument.getId(ctx, "tag_id");
+                    var resLoc = IdentifierArgument.getId(ctx, "tag_id");
                     var tag = TagKey.create(Registries.ITEM, resLoc);
                     ESD.getCustom(ctx, CommandCriteria.DEFINITION).addCriterion(new ItemTagCriterion(tag));
                     doSearch(ctx);
