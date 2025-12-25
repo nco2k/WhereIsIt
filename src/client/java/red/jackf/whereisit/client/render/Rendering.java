@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -25,6 +24,8 @@ import red.jackf.whereisit.api.SearchResult;
 import red.jackf.whereisit.config.WhereIsItConfig;
 
 import java.util.*;
+
+import static red.jackf.whereisit.client.render.WhereIsItPipelines.*;
 
 @SuppressWarnings("resource")
 public class Rendering {
@@ -148,7 +149,7 @@ public class Rendering {
         float x = -width / 2f;
 
         // Background
-        VertexConsumer bgBuffer = consumers.getBuffer(RenderTypes.textBackgroundSeeThrough());
+        VertexConsumer bgBuffer = consumers.getBuffer(WhereIsItPipelines.TEXT_BACKGROUND_NO_DEPTH);
         int bgColour = ((int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25F) * 255F)) << 24;
         bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
         bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
@@ -180,7 +181,7 @@ public class Rendering {
         pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
         pose.mulPose(Axis.YP.rotationDegrees(camera.yRot() - 180f));
 
-        VertexConsumer consumer = bufferSource.getBuffer(RenderTypes.debugQuads());
+        VertexConsumer consumer = bufferSource.getBuffer(DEBUG_QUADS_NO_DEPTH);
 
         // Get progress for RGB animation
         float progress = getRenderingProgress(tickDelta);
@@ -208,7 +209,7 @@ public class Rendering {
             }
         }
 
-        bufferSource.endBatch(RenderTypes.debugQuads());
+        bufferSource.endBatch(DEBUG_QUADS_NO_DEPTH);
     }
 
     // Rendering progress for fadeout
