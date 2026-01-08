@@ -71,6 +71,12 @@ public class WhereIsItConfig {
         @SerialEntry(comment = "How much a slot's X position influences the colour of a slot highlight. Range: [0, 4]")
         public float slotHighlightXFactor = 1f;
 
+        @SerialEntry(comment = "Whether to render slot highlights above items (with transparency) or below items (opaque).")
+        public boolean renderHighlightAboveItems = false;
+
+        @SerialEntry(comment = "Opacity of the highlight when rendering above items. Range: [0, 255], where 0 is fully transparent and 255 is fully opaque.")
+        public int highlightOpacity = 102;
+
         @SerialEntry(comment = "Modifier for how fast Where Is It will cycle through the current colour scheme's gradient. Range: [0.1, 4]")
         public float highlightTimeFactor = 1f;
 
@@ -118,6 +124,7 @@ public class WhereIsItConfig {
             this.slotHighlightMouseFactor = Mth.clamp(this.slotHighlightMouseFactor, 0f, 4f);
             this.slotHighlightXFactor = Mth.clamp(this.slotHighlightXFactor, 0f, 4f);
             this.highlightTimeFactor = Mth.clamp(this.slotHighlightXFactor, 0.1f, 4f);
+            this.highlightOpacity = Mth.clamp(this.highlightOpacity, 0, 255);
             this.solidColour = new Color(this.solidColour.getRGB() | 0xFF_000000);
             this.containerNameLabelScale = Mth.clamp(this.containerNameLabelScale, 0.25f, 2f);
 
