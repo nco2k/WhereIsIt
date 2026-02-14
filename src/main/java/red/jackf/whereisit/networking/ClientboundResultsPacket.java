@@ -24,6 +24,7 @@ import java.util.HashSet;
  * <li>if (hasCustomName) hasCustomNameOffset: boolean</li>
  * <li>if (hasCustomName && hasCustomNameOffset) nameOffset: 3 * double</li>
  * <li>numberOfOtherPositions: Collection&lt;BlockPos&gt;</li>
+ * <li>entityId: Optional&lt;int&gt;</li>
  * After:
  * <li>hasRequest: boolean</li>
  * <li>if (hasRequest) request: SearchRequest</li>

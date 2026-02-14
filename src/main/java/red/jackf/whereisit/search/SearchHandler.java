@@ -14,6 +14,7 @@ import red.jackf.whereisit.api.SearchRequest;
 import red.jackf.whereisit.api.SearchResult;
 import red.jackf.whereisit.api.search.BlockSearcher;
 import red.jackf.whereisit.api.search.ConnectedBlocksGrabber;
+import red.jackf.whereisit.api.search.EntitySearcher;
 import red.jackf.whereisit.config.WhereIsItConfig;
 import red.jackf.whereisit.networking.ClientboundResultsPacket;
 import red.jackf.whereisit.networking.ServerboundSearchForItemPacket;
@@ -82,6 +83,21 @@ public class SearchHandler {
                         results.put(adjustedRoot, result.get().withOtherPositions(connected));
                     }
                 }
+            }
+        }
+        // Entity search
+        var aabb = player.getBoundingBox().inflate(range);
+        var entities = level.getEntities(player, aabb, e -> true);
+
+        for (var entity : entities) {
+            if (entity == player) continue;
+            if (entity.position().distanceToSqr(player.position()) > maxRange) continue;
+            var result = EntitySearcher.EVENT.invoker().search(request, player, entity);
+
+            if (result.hasValue()) {
+                SearchResult searchResult = result.get();
+                if (searchResult.entityId() == null) searchResult = searchResult.withEntityId(entity.getId());
+                results.put(entity.blockPosition(), searchResult);
             }
         }
 
