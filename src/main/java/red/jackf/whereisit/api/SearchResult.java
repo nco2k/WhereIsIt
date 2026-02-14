@@ -31,6 +31,23 @@ public final class SearchResult {
             SearchResult::new
     );
 
+    /**
+     * Legacy codec to support packets sent before entity ids were included in {@link SearchResult}.
+     */
+    public static final StreamCodec<RegistryFriendlyByteBuf, SearchResult> LEGACY_STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC,
+            SearchResult::pos,
+            ItemStack.STREAM_CODEC.apply(ByteBufCodecs::optional).map(opt -> opt.orElse(null), Optional::ofNullable),
+            SearchResult::item,
+            ComponentSerialization.OPTIONAL_STREAM_CODEC.map(opt -> opt.orElse(null), Optional::ofNullable),
+            SearchResult::name,
+            Codecs.VEC3.apply(ByteBufCodecs::optional).map(opt -> opt.orElse(null), Optional::ofNullable),
+            SearchResult::customNameOffset,
+            BlockPos.STREAM_CODEC.apply(ByteBufCodecs.collection(HashSet::new)),
+            SearchResult::otherPositions,
+            SearchResult::legacy
+    );
+
     private final BlockPos pos;
     private final @Nullable ItemStack item;
     private final @Nullable Component name;
@@ -50,6 +67,14 @@ public final class SearchResult {
         this.nameOffset = nameOffset;
         this.otherPositions.addAll(otherPositions);
         this.entityId = entityId;
+    }
+
+    private static SearchResult legacy(BlockPos pos,
+                                       @Nullable ItemStack item,
+                                       @Nullable Component name,
+                                       @Nullable Vec3 nameOffset,
+                                       Collection<BlockPos> otherPositions) {
+        return new SearchResult(pos, item, name, nameOffset, otherPositions, null);
     }
 
     public static Builder builder(BlockPos pos) {
