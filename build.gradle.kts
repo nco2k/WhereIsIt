@@ -365,7 +365,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("emi", "jei", "roughly-enough-items", "modmenu").forEach {
+                    listOf("modmenu").forEach {
                         optional {
                             slug.set(it)
                         }
@@ -385,7 +385,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("emi", "jei", "rei", "modmenu").forEach {
+                    listOf("modmenu").forEach {
                         optional {
                             slug.set(it)
                         }
