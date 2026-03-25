@@ -1,8 +1,10 @@
 package red.jackf.whereisit.client.mixin;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -30,9 +32,8 @@ public class WhereIsItRenderPipelinesMixin {
                         .withVertexShader("core/position_color")
                         .withFragmentShader("core/position_color")
                         .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-                        .withBlend(BlendFunction.TRANSLUCENT)
-                        .withDepthWrite(false)
-                        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                        .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
                         .withCull(false)
                         .build();
 
@@ -42,9 +43,8 @@ public class WhereIsItRenderPipelinesMixin {
                         .withVertexShader("core/position_color")
                         .withFragmentShader("core/position_color")
                         .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-                        .withBlend(BlendFunction.TRANSLUCENT)
-                        .withDepthWrite(false)
-                        .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                        .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
                         .withCull(false)
                         .build();
 
@@ -54,9 +54,8 @@ public class WhereIsItRenderPipelinesMixin {
                         .withVertexShader("core/position_color")
                         .withFragmentShader("core/position_color")
                         .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-                        .withBlend(BlendFunction.TRANSLUCENT)
-                        .withDepthWrite(false)
-                        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                        .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
                         .withCull(false)
                         .build();
 

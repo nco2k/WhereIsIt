@@ -7,7 +7,10 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Matrix4f;
+import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.Minecraft;
+import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,25 +22,26 @@ import red.jackf.whereisit.client.render.Rendering;
 public abstract class LevelRendererMixin {
 
     @Inject(
-            method = "renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V",
+            method = "renderLevel",
             at = @At("TAIL")
     )
     private void onRenderLevelEnd(
             GraphicsResourceAllocator graphicsResourceAllocator,
             DeltaTracker deltaTracker,
             boolean renderBlockOutline,
-            Camera camera,
-            Matrix4f frustumMatrix,
-            Matrix4f projectionMatrix,
-            Matrix4f cullingProjectionMatrix,
-            GpuBufferSlice shaderFog,
+            CameraRenderState cameraState,
+            Matrix4fc modelViewMatrix,
+            GpuBufferSlice terrainFog,
             Vector4f fogColor,
-            boolean renderSky,
+            boolean shouldRenderSky,
+            ChunkSectionsToRender chunkSectionsToRender,
             CallbackInfo ci
     ) {
         if (!Rendering.shouldBeRendering()) return;
 
-        float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(true);
+        float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
+
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
         //GL11.glDisable(GL11.GL_DEPTH_TEST);
         //GL11.glDepthFunc(GL11.GL_ALWAYS);

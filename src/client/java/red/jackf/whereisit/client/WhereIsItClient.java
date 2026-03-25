@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 
 public class WhereIsItClient implements ClientModInitializer {
     public static final Logger LOGGER = LogUtils.getLogger();
-    private static final KeyMapping SEARCH = KeyBindingHelper.registerKeyBinding(
+    private static final KeyMapping SEARCH = KeyMappingHelper.registerKeyMapping(
             new KeyMapping(
                     "key.whereisit.search",
                     InputConstants.Type.KEYSYM,
@@ -106,7 +106,7 @@ public class WhereIsItClient implements ClientModInitializer {
             clearResults();
         });
 
-        ClientTickEvents.START_WORLD_TICK.register(level -> {
+        ClientTickEvents.START_LEVEL_TICK.register(level -> {
             Rendering.incrementTicksSinceSearch();
             if (Rendering.getTicksSinceSearch() > (WhereIsItConfig.INSTANCE.instance().getCommon().fadeoutTimeTicks + POST_FADEOUT_REPEAT_PERIOD_TICKS)) {
                 // clear rendered slots after time limit
@@ -140,7 +140,7 @@ public class WhereIsItClient implements ClientModInitializer {
         if (WhereIsItConfig.INSTANCE.instance().getClient().debug.printSearchRequestsInChat && Minecraft.getInstance().player != null) {
             var text = TextUtil.prettyPrint(request.toTag());
             for (Component component : text)
-                Minecraft.getInstance().player.displayClientMessage(component, false);
+                Minecraft.getInstance().player.sendSystemMessage(component);
         }
 
         var anySucceeded = SearchInvoker.EVENT.invoker().search(request, WhereIsItClient::recieveResults);

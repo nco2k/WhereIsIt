@@ -2,14 +2,12 @@ package red.jackf.whereisit.client.render;
 
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.InvalidateRenderStateCallback;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -35,6 +33,7 @@ public class Rendering {
     private static final Map<BlockPos, SearchResult> namedResults = new HashMap<>();
     private static final Map<Integer, SearchResult> entityResults = new HashMap<>();
     private static final List<ScheduledLabel> scheduledLabels = new ArrayList<>();
+    private static final int FULL_BRIGHT = 0x00F000F0;
 
     private record ScheduledLabel(Vec3 position, Component text, boolean seeThrough) {}
 
@@ -43,16 +42,6 @@ public class Rendering {
     private static SearchRequest lastRequest = null;
 
     public static void setup() {
-        HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
-            if (!shouldBeRendering() || !WhereIsItConfig.INSTANCE.instance().getClient().showContainerNamesInResults)
-                return;
-
-            for (SearchResult value : namedResults.values()) {
-                scheduleLabel(value.pos().getCenter().add(value.nameOffset()), value.name(),
-                        WhereIsItConfig.INSTANCE.instance().getCommon().debug.labelsAreSeeThrough);
-            }
-        });
-
         InvalidateRenderStateCallback.EVENT.register(scheduledLabels::clear);
     }
 
@@ -91,7 +80,7 @@ public class Rendering {
     // ----------------------------
     // SLOT HIGHLIGHTING (in AbstractContainerScreenMixin Mixin)
     // ----------------------------
-    public static void renderSlotHighlight(AbstractContainerScreen<?> screen, GuiGraphics graphics, float tickDelta, boolean applyTransparency, int mouseX, int mouseY) {
+    public static void renderSlotHighlight(AbstractContainerScreen<?> screen, GuiGraphicsExtractor graphics, float tickDelta, boolean applyTransparency, int mouseX, int mouseY) {
         if (!shouldBeRendering() || lastRequest == null) return;
 
         float time = getBaseProgress(ticksSinceSearch, tickDelta);
@@ -128,6 +117,13 @@ public class Rendering {
     }
 
     public static void renderLabels(PoseStack ignoredPoseStack, Camera camera, MultiBufferSource consumers) {
+        if (shouldBeRendering() && WhereIsItConfig.INSTANCE.instance().getClient().showContainerNamesInResults) {
+            for (SearchResult value : namedResults.values()) {
+                scheduleLabel(value.pos().getCenter().add(value.nameOffset()), value.name(),
+                        WhereIsItConfig.INSTANCE.instance().getCommon().debug.labelsAreSeeThrough);
+            }
+        }
+
         if (scheduledLabels.isEmpty()) return;
 
         Vec3 camPos = camera.position();
@@ -167,16 +163,16 @@ public class Rendering {
         // Background
         VertexConsumer bgBuffer = consumers.getBuffer(WhereIsItPipelines.TEXT_BACKGROUND_NO_DEPTH);
         int bgColour = ((int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25F) * 255F)) << 24;
-        bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
-        bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
-        bgBuffer.addVertex(matrix, x + width, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
-        bgBuffer.addVertex(matrix, x + width, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
+        bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
+        bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
+        bgBuffer.addVertex(matrix, x + width, 10f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
+        bgBuffer.addVertex(matrix, x + width, -1f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
 
         //GL11.glDisable(GL11.GL_DEPTH_TEST);
         //GL11.glDepthFunc(GL11.GL_ALWAYS);
 
         Font.DisplayMode mode = Font.DisplayMode.SEE_THROUGH;
-        Minecraft.getInstance().font.drawInBatch(label.text, x, 0, 0xFFFFFFFF, false, matrix, consumers, mode, 0, LightTexture.FULL_BRIGHT);
+        Minecraft.getInstance().font.drawInBatch(label.text, x, 0, 0xFFFFFFFF, false, matrix, consumers, mode, 0, FULL_BRIGHT);
 
         //GL11.glDepthFunc(GL11.GL_LEQUAL);
         //GL11.glEnable(GL11.GL_DEPTH_TEST);

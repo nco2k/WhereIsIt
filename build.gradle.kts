@@ -2,14 +2,14 @@
 
 import com.github.breadmoirai.githubreleaseplugin.GithubReleaseTask
 import me.modmuss50.mpp.ReleaseType
-import net.fabricmc.loom.task.RemapJarTask
+import org.gradle.jvm.tasks.Jar
 import org.ajoberstar.grgit.Grgit
 import red.jackf.GenerateChangelogTask
 import red.jackf.UpdateDependenciesTask
 
 plugins {
     id("maven-publish")
-    id("fabric-loom") version "1.14-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
     id("com.github.breadmoirai.github-release") version "2.4.1"
     id("org.ajoberstar.grgit") version "5.2.1"
     id("me.modmuss50.mod-publish-plugin") version "0.3.3"
@@ -53,6 +53,16 @@ repositories {
         content {
             includeGroup("com.terraformersmc")
             includeGroup("dev.emi")
+        }
+    }
+
+    // PB4 / Placeholder API
+    maven {
+        name = "Nucleoid"
+        url = uri("https://maven.nucleoid.xyz/")
+        content {
+            includeGroup("eu.pb4")
+            includeGroup("xyz.nucleoid")
         }
     }
 
@@ -123,7 +133,7 @@ java {
 }
 
 tasks.withType<JavaCompile> {
-    options.release.set(21)
+    options.release.set(25)
 }
 
 loom {
@@ -134,10 +144,6 @@ loom {
             sourceSet(sourceSets["main"])
             sourceSet(sourceSets["client"])
         }
-    }
-
-    mixin {
-        defaultRefmapName.set("whereisit.refmap.json")
     }
 
     log4jConfigs.from(file("log4j2.xml"))
@@ -152,37 +158,34 @@ loom {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${properties["minecraft_version"]}")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${properties["parchment_version"]}@zip")
-    })
-    modImplementation("net.fabricmc:fabric-loader:${properties["loader_version"]}")
+    implementation("net.fabricmc:fabric-loader:${properties["loader_version"]}")
 
-    include(modApi("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")!!)
+    implementation("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")
+    include("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")
 
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric-api_version"]}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric-api_version"]}")
 
     // Config
-    modImplementation("dev.isxander:yet-another-config-lib:${properties["yacl_version"]}") {
+    implementation("dev.isxander:yet-another-config-lib:${properties["yacl_version"]}") {
         exclude(group = "com.terraformersmc", module = "modmenu")
     }
 
     // COMPATIBILITY
-    modCompileOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
-    modLocalRuntime("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
+    compileOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
+    runtimeOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
 
     // Recipe Viewer APIs
     // https://github.com/mezz/JustEnoughItems/issues/2891
     // modCompileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-common-api:${properties["jei_version"]}")
     // modCompileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-fabric-api:${properties["jei_version"]}")
-    modCompileOnly("maven.modrinth:jei:${properties["jei_modrinth_id"]}")
+    // compileOnly("maven.modrinth:jei:${properties["jei_modrinth_id"]}")
 
-    // modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${properties["rei_version"]}")
-    // modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${properties["rei_version"]}")
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}")
+    // compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${properties["rei_version"]}")
+    // compileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${properties["rei_version"]}")
+    // compileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}")
 
-    //modCompileOnly("dev.emi:emi-fabric:${properties["emi_version"]}:api")
-    modCompileOnly("dev.emi:emi-fabric:${properties["emi_version"]}")
+    //compileOnly("dev.emi:emi-fabric:${properties["emi_version"]}:api")
+    // compileOnly("dev.emi:emi-fabric:${properties["emi_version"]}")
 
     // Recipe Viewer Runtimes
     //modLocalRuntime("mezz.jei:jei-${properties["minecraft_version"]}-fabric:${properties["jei_version"]}")
@@ -201,22 +204,12 @@ tasks.withType<ProcessResources>().configureEach {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(21)
+    options.release.set(25)
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf(
         "-Xmaxerrs", "1000"
     ))
 
-    val sourceSetName = this.name.replace("compile", "").replace("Java", "").lowercase()
-    if (sourceSetName.isNotEmpty()) {
-        options.compilerArgumentProviders.add(CommandLineArgumentProvider {
-            listOf(
-                "-AreobfTsrgFile=${project.projectDir}/.gradle/loom-cache/mixin-map-${properties["minecraft_version"]}.tsrg",
-                "-AoutRefMapFile=${layout.buildDirectory.get()}/tmp/${this.name}/whereisit.refmap.json",
-                "-AdefaultObfuscationEnv=named:intermediary"
-            )
-        })
-    }
 }
 
 tasks.named<Jar>("sourcesJar") {
@@ -228,23 +221,6 @@ tasks.named<Jar>("sourcesJar") {
 tasks.jar {
     from("LICENSE") {
         rename { "${it}_${properties["archivesBaseName"]}"}
-    }
-
-    doFirst {
-        val refmapSrc = listOf(
-            file("${layout.buildDirectory.get()}/tmp/compileClientJava/whereisit.refmap.json"),
-            file("${layout.buildDirectory.get()}/tmp/compileJava/whereisit.refmap.json")
-        ).firstOrNull { it.exists() }
-
-        val refmapDest = file("${layout.buildDirectory.get()}/resources/main/whereisit.refmap.json")
-
-        if (refmapSrc != null) {
-            refmapDest.parentFile.mkdirs()
-            refmapSrc.copyTo(refmapDest, overwrite = true)
-            println("Copied refmap from: ${refmapSrc.absolutePath}")
-        } else {
-            println("WARNING: refmap not found!")
-        }
     }
 }
 
@@ -350,13 +326,13 @@ if (canPublish) {
         releaseName = "${properties["mod_name"]} $newTag"
         targetCommitish = grgit!!.branch.current().name
         releaseAssets.from(
-            tasks["remapJar"].outputs.files,
-            tasks["remapSourcesJar"].outputs.files,
+            tasks["jar"].outputs.files,
+            tasks["sourcesJar"].outputs.files,
         )
         subprojects.forEach {
             releaseAssets.from(
-                it.tasks["remapJar"].outputs.files,
-                it.tasks["remapSourcesJar"].outputs.files,
+                it.tasks["jar"].outputs.files,
+                it.tasks["sourcesJar"].outputs.files,
             )
         }
 
@@ -374,7 +350,7 @@ if (canPublish) {
             })
             modLoaders.add("fabric")
             modLoaders.add("quilt")
-            file.set(tasks.named<RemapJarTask>("remapJar").get().archiveFile)
+            file.set(tasks.named<Jar>("jar").get().archiveFile)
 
             if (System.getenv().containsKey("CURSEFORGE_TOKEN") || dryRun.get()) {
                 curseforge {

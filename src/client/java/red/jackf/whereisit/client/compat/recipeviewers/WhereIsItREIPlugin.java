@@ -1,13 +1,13 @@
 package red.jackf.whereisit.client.compat.recipeviewers;
 
-import dev.architectury.fluid.FluidStack;
+/*import dev.architectury.fluid.FluidStack;
 import me.shedaniel.rei.api.client.REIRuntime;
 import me.shedaniel.rei.api.client.gui.screen.DisplayScreen;
 import me.shedaniel.rei.api.client.gui.widgets.Slot;
 import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.common.entry.EntryStack;
-import me.shedaniel.rei.impl.client.gui.widget.EntryWidget;
+import me.shedaniel.rei.impl.client.gui.widget.EntryWidget;*/
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -30,6 +30,7 @@ import java.util.function.Consumer;
  * Internal usages: <br />
  * - getting a tag ID from a recipe slot
  */
+/*
 public class WhereIsItREIPlugin implements REIClientPlugin {
     private boolean hasErrored = false;
     public WhereIsItREIPlugin() {
@@ -104,7 +105,7 @@ public class WhereIsItREIPlugin implements REIClientPlugin {
 
     /**
      * Parses an REI EntryStack, then passes 0 or more Criterion to <code>consumer</code>.
-     */
+     *//*
     private static void parseEntryStack(Consumer<Criterion> consumer, EntryStack<?> entryStack, SearchRequestPopulator.Context context) {
         var value = entryStack.getValue();
         if (value instanceof ItemStack stack) {
@@ -113,4 +114,4 @@ public class WhereIsItREIPlugin implements REIClientPlugin {
             consumer.accept(new FluidCriterion(fluidStack.getFluid()));
         }
     }
-}
+}*/

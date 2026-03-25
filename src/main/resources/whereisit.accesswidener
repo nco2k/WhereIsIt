@@ -1,4 +1,4 @@
-accessWidener	v1	named
+accessWidener	v1	official
 
 # get hovered item slot
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;

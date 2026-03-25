@@ -1,11 +1,11 @@
 package red.jackf.whereisit.client.compat.recipeviewers;
 
-import dev.emi.emi.api.EmiApi;
+/*import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.stack.*;
 import dev.emi.emi.runtime.EmiFavorite;
-import dev.emi.emi.screen.RecipeScreen;
+import dev.emi.emi.screen.RecipeScreen;*/
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
@@ -33,6 +33,7 @@ import java.util.function.Consumer;
  * - filtering ingredients by tag or not, and stacks by item or fluids <br />
  * - getting the hovered item in a recipe screen, and if it's the result
  */
+/*
 @SuppressWarnings("UnstableApiUsage")
 public class WhereIsItEMIPlugin implements EmiPlugin {
     private static boolean hasErrored = false;
@@ -93,4 +94,4 @@ public class WhereIsItEMIPlugin implements EmiPlugin {
     public void register(EmiRegistry registry) {
 
     }
-}
+}*/

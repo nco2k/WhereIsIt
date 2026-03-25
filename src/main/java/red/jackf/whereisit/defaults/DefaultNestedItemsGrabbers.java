@@ -18,7 +18,7 @@ public class DefaultNestedItemsGrabbers {
             ItemContainerContents container = source.get(DataComponents.CONTAINER);
             if (container == null) return Stream.empty();
 
-            return container.nonEmptyStream();
+            return container.nonEmptyItemCopyStream();
         });
     }
 

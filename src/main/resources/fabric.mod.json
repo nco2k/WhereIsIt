@@ -37,15 +37,6 @@
 		],
 		"modmenu": [
 			"red.jackf.whereisit.client.compat.WhereIsItModMenu"
-		],
-		"jei_mod_plugin": [
-			"red.jackf.whereisit.client.compat.recipeviewers.WhereIsItJEIPlugin"
-		],
-		"rei_client": [
-			"red.jackf.whereisit.client.compat.recipeviewers.WhereIsItREIPlugin"
-		],
-		"emi": [
-			"red.jackf.whereisit.client.compat.recipeviewers.WhereIsItEMIPlugin"
 		]
     },
   "accessWidener": "whereisit.accesswidener",

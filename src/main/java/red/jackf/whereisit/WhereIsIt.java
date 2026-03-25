@@ -43,9 +43,9 @@ public class WhereIsIt implements ModInitializer {
 			ClientCapabilities.clear(handler.player);
 		});
 
-		PayloadTypeRegistry.playS2C().register(ClientboundResultsPacket.TYPE, ClientboundResultsPacket.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(ServerboundSearchForItemPacket.TYPE, ServerboundSearchForItemPacket.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(ServerboundClientCapabilitiesPacket.TYPE, ServerboundClientCapabilitiesPacket.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(ClientboundResultsPacket.TYPE, ClientboundResultsPacket.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(ServerboundSearchForItemPacket.TYPE, ServerboundSearchForItemPacket.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(ServerboundClientCapabilitiesPacket.TYPE, ServerboundClientCapabilitiesPacket.STREAM_CODEC);
 
 		ServerPlayNetworking.registerGlobalReceiver(ServerboundSearchForItemPacket.TYPE, (payload, context) ->
 				SearchHandler.handleFromPacket(payload, context.player(), context.responseSender()));

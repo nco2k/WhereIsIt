@@ -6,7 +6,7 @@ import dev.isxander.yacl3.gui.image.ImageRenderer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -231,7 +231,7 @@ public class WhereIsItConfigScreenBuilder {
             private static final int labelRefWidth = 136;
             private static final int labelRefHeight = 54;
             @Override
-            public int render(GuiGraphics graphics, int x, int y, int renderWidth, float tickDelta) {
+            public int render(GuiGraphicsExtractor graphics, int x, int y, int renderWidth, float tickDelta) {
                 float ratio = (float) renderWidth / imageWidth;
                 int height = (int) (imageHeight * ratio);
 
@@ -258,7 +258,7 @@ public class WhereIsItConfigScreenBuilder {
                 graphics.pose().scale(f * 5, f * 5);
                 var font = Minecraft.getInstance().font;
                 var textWidth = font.width("Tools");
-                graphics.drawString(font, "Tools", -textWidth / 2, -font.lineHeight / 2, 0xFF_FFFFFF, false);
+                graphics.text(font, "Tools", -textWidth / 2, -font.lineHeight / 2, 0xFF_FFFFFF, false);
                 graphics.pose().popMatrix();
 
                 return height;
@@ -453,7 +453,7 @@ public class WhereIsItConfigScreenBuilder {
     private static Optional<ImageRenderer> getGradientPreview(ColourScheme scheme, Color solidColour) {
         var renderer = new ImageRenderer() {
             @Override
-            public int render(GuiGraphics graphics, int x, int y, int renderWidth, float tickDelta) {
+            public int render(GuiGraphicsExtractor graphics, int x, int y, int renderWidth, float tickDelta) {
                 int borderThickness = 8;
                 int renderHeight = 64;
 
