@@ -160,8 +160,7 @@ dependencies {
     minecraft("com.mojang:minecraft:${properties["minecraft_version"]}")
     implementation("net.fabricmc:fabric-loader:${properties["loader_version"]}")
 
-    implementation("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")
-    include("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")
+    include(api("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")!!)
 
     implementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric-api_version"]}")
 
