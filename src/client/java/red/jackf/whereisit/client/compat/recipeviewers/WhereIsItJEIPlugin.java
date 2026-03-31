@@ -1,11 +1,11 @@
 package red.jackf.whereisit.client.compat.recipeviewers;
 
-/*import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.api.runtime.IRecipesGui;*/
+import mezz.jei.api.runtime.IRecipesGui;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ import red.jackf.whereisit.client.api.events.ShouldIgnoreKey;
 import red.jackf.whereisit.client.compat.CompatUtils;
 import red.jackf.whereisit.config.WhereIsItConfig;
 
-/*public final class WhereIsItJEIPlugin implements IModPlugin {
+public final class WhereIsItJEIPlugin implements IModPlugin {
     private boolean hasErrored = false;
     private boolean setup = false;
     private IJeiRuntime runtime = null;
@@ -72,7 +72,7 @@ import red.jackf.whereisit.config.WhereIsItConfig;
             return;
         }
         var fluid = recipe.getIngredientUnderMouse(FabricTypes.FLUID_STACK);
-        fluid.ifPresent(fluidIngredient -> request.accept(new FluidCriterion(fluidIngredient.getFluid())));
+        fluid.ifPresent(fluidIngredient -> request.accept(new FluidCriterion(fluidIngredient.getFluidVariant().getFluid())));
     }
 
     private interface OverlayGetter {
@@ -87,7 +87,7 @@ import red.jackf.whereisit.config.WhereIsItConfig;
         }
         var fluidIngredient = getter.get(FabricTypes.FLUID_STACK);
         if (fluidIngredient != null) {
-            request.accept(new FluidCriterion(fluidIngredient.getFluid()));
+            request.accept(new FluidCriterion(fluidIngredient.getFluidVariant().getFluid()));
             return true;
         }
         return false;
@@ -98,4 +98,3 @@ import red.jackf.whereisit.config.WhereIsItConfig;
         this.runtime = null;
     }
 }
-*/

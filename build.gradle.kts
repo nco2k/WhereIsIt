@@ -179,7 +179,7 @@ dependencies {
     // https://github.com/mezz/JustEnoughItems/issues/2891
     // modCompileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-common-api:${properties["jei_version"]}")
     // modCompileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-fabric-api:${properties["jei_version"]}")
-    // compileOnly("maven.modrinth:jei:${properties["jei_modrinth_id"]}")
+    compileOnly("maven.modrinth:jei:${properties["jei_modrinth_id"]}")
 
     // compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${properties["rei_version"]}")
     // compileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${properties["rei_version"]}")
@@ -189,7 +189,7 @@ dependencies {
     // compileOnly("dev.emi:emi-fabric:${properties["emi_version"]}")
 
     // Recipe Viewer Runtimes
-    //modLocalRuntime("mezz.jei:jei-${properties["minecraft_version"]}-fabric:${properties["jei_version"]}")
+    runtimeOnly("mezz.jei:jei-${properties["minecraft_version"]}-fabric:${properties["jei_version"]}")
     /*modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}") {
         exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
     }*/
@@ -366,7 +366,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("modmenu").forEach {
+                    listOf("jei", "modmenu").forEach {
                         optional {
                             slug.set(it)
                         }
@@ -386,7 +386,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("modmenu").forEach {
+                    listOf("jei", "modmenu").forEach {
                         optional {
                             slug.set(it)
                         }
