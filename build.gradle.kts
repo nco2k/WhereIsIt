@@ -173,7 +173,7 @@ dependencies {
 
     // COMPATIBILITY
     compileOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
-    runtimeOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
+    localRuntime("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
 
     // Recipe Viewer APIs
     // https://github.com/mezz/JustEnoughItems/issues/2891
@@ -189,7 +189,7 @@ dependencies {
     // compileOnly("dev.emi:emi-fabric:${properties["emi_version"]}")
 
     // Recipe Viewer Runtimes
-    runtimeOnly("mezz.jei:jei-${properties["minecraft_version"]}-fabric:${properties["jei_version"]}")
+    localRuntime("mezz.jei:jei-${properties["minecraft_version"]}-fabric:${properties["jei_version"]}")
     /*modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}") {
         exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
     }*/
