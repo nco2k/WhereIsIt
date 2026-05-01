@@ -55,7 +55,7 @@ public class Rendering {
             if (result.isEntityResult() && result.entityId() != null) {
                 entityResults.put(result.entityId(), result);
             }
-            if (result.name() != null) namedResults.put(result.pos(), result);
+            if (result.name() != null && !isBlockedLabel(result.name())) namedResults.put(result.pos(), result);
         }
     }
 
@@ -112,8 +112,25 @@ public class Rendering {
     // LABEL RENDERING
     // ----------------------------
     public static void scheduleLabel(Vec3 pos, Component name, boolean seeThrough) {
-        if (pos == null || name == null) return;
+        if (pos == null || name == null || isBlockedLabel(name)) return;
         scheduledLabels.add(new ScheduledLabel(pos, name, seeThrough));
+    }
+
+    private static boolean isBlockedLabel(Component name) {
+        String normalizedName = normalizeLabelText(name.getString());
+        if (normalizedName.isEmpty()) return false;
+
+        List<String> blockedNames = WhereIsItConfig.INSTANCE.instance().getClient().blockedContainerLabelNames;
+        if (blockedNames == null || blockedNames.isEmpty()) return false;
+
+        for (String blockedName : blockedNames) {
+            if (normalizedName.equals(normalizeLabelText(blockedName))) return true;
+        }
+        return false;
+    }
+
+    private static String normalizeLabelText(@Nullable String text) {
+        return text == null ? "" : text.trim().toLowerCase(Locale.ROOT);
     }
 
     public static void renderLabels(PoseStack ignoredPoseStack, Camera camera, MultiBufferSource consumers) {

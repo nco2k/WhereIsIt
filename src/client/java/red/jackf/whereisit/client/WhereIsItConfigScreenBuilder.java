@@ -41,6 +41,7 @@ public class WhereIsItConfigScreenBuilder {
                 .category(ConfigCategory.createBuilder()
                         .name(translatable("whereisit.config.title"))
                         .group(makeClientGroup(instance.defaults(), instance.instance()))
+                        .group(makeBlockedContainerLabelNamesOption(instance.defaults(), instance.instance()))
                         .group(makeCommonGroup(instance.defaults(), instance.instance()))
                         .group(ListOption.<String>createBuilder()
                                 .name(translatable("whereisit.config.common.commandAliases"))
@@ -220,6 +221,21 @@ public class WhereIsItConfigScreenBuilder {
                         .step(0.01f))
                 .build();
         return List.of(showNameToggle, nameSizeOption, yPositionOption);
+    }
+
+    private static ListOption<String> makeBlockedContainerLabelNamesOption(WhereIsItConfig defaults, WhereIsItConfig config) {
+        return ListOption.<String>createBuilder()
+                .name(translatable("whereisit.config.client.blockedContainerLabelNames"))
+                .description(OptionDescription.of(translatable("whereisit.config.client.blockedContainerLabelNames.description")))
+                .controller(StringControllerBuilder::create)
+                .binding(
+                        defaults.getClient().blockedContainerLabelNames,
+                        () -> config.getClient().blockedContainerLabelNames,
+                        l -> config.getClient().blockedContainerLabelNames = l
+                )
+                .initial("Example Chest Name")
+                .insertEntriesAtEnd(true)
+                .build();
     }
 
     private static Optional<ImageRenderer> getLabelImage(Supplier<Float> scaleGetter) {
