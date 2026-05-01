@@ -392,6 +392,25 @@ public class WhereIsItConfigScreenBuilder {
                 () -> config.getClient().compatibility.emiSupport,
                 b -> config.getClient().compatibility.emiSupport = b
         );
+        var chestTrackerLoaded = FabricLoader.getInstance().isModLoaded("chesttracker")
+                || FabricLoader.getInstance().isModLoaded("chest_tracker");
+        var disableOwnLabelsForChestTrackerOptionDesc = OptionDescription.createBuilder()
+                .text(translatable("whereisit.config.compatibility.client.disableOwnContainerNameLabelsWhenChestTrackerLoaded.description"));
+        if (!chestTrackerLoaded) {
+            disableOwnLabelsForChestTrackerOptionDesc.text(translatable("whereisit.config.compatibility.modNotInstalled").withStyle(ChatFormatting.RED));
+        }
+        var disableOwnLabelsForChestTrackerOption = Option.<Boolean>createBuilder()
+                .name(translatable("whereisit.config.compatibility.client.disableOwnContainerNameLabelsWhenChestTrackerLoaded"))
+                .description(disableOwnLabelsForChestTrackerOptionDesc.build())
+                .binding(
+                        defaults.getClient().compatibility.disableOwnContainerNameLabelsWhenChestTrackerLoaded,
+                        () -> config.getClient().compatibility.disableOwnContainerNameLabelsWhenChestTrackerLoaded,
+                        b -> config.getClient().compatibility.disableOwnContainerNameLabelsWhenChestTrackerLoaded = b
+                )
+                .controller(opt -> BooleanControllerBuilder.create(opt)
+                        .coloured(true)
+                        .onOffFormatter())
+                .build();
 
         return OptionGroup.createBuilder()
                 .name(translatable("whereisit.config.client"))
@@ -413,6 +432,7 @@ public class WhereIsItConfigScreenBuilder {
                 .option(jeiSupport)
                 .option(reiSupport)
                 .option(emiSupport)
+                .option(disableOwnLabelsForChestTrackerOption)
                 .build();
     }
 

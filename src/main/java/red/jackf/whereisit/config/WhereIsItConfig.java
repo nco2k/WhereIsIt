@@ -116,6 +116,9 @@ public class WhereIsItConfig {
 
             @SerialEntry(comment = "Whether to enable grabbing items/tags from EMI.")
             public boolean emiSupport = true;
+
+            @SerialEntry(comment = "Whether to always disable Where Is It's own container-name labels when ChestTracker is loaded.")
+            public boolean disableOwnContainerNameLabelsWhenChestTrackerLoaded = true;
         }
 
         @SerialEntry(comment = "Client-sided debug options")
