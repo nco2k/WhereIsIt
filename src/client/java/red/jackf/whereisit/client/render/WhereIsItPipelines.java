@@ -19,21 +19,18 @@ public class WhereIsItPipelines {
         DEBUG_QUADS_NO_DEPTH = RenderType.create(
                 "whereisit_debug_quads_no_depth",
                 RenderSetup.builder(DEBUG_QUADS_NO_DEPTH_PIPELINE)
-                        .bufferSize(RenderType.BIG_BUFFER_SIZE)
                         .createRenderSetup()
         );
 
         DEBUG_QUADS_LEQUAL_DEPTH = RenderType.create(
                 "whereisit_debug_quads_lequal",
                 RenderSetup.builder(DEBUG_QUADS_LEQUAL_DEPTH_PIPELINE)
-                        .bufferSize(RenderType.BIG_BUFFER_SIZE)
                         .createRenderSetup()
         );
 
         TEXT_BACKGROUND_NO_DEPTH = RenderType.create(
                 "whereisit_text_background_no_depth",
                 RenderSetup.builder(TEXT_BACKGROUND_NO_DEPTH_PIPELINE)
-                        .bufferSize(RenderType.SMALL_BUFFER_SIZE)
                         .createRenderSetup()
         );
     }

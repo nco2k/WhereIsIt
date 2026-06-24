@@ -10,7 +10,7 @@ public class ShouldIgnoreKeyDefaults {
     static void setup() {
         // Creative mode search bar and anvil bar
         ShouldIgnoreKey.EVENT.register(() -> {
-            var screen = Minecraft.getInstance().screen;
+            var screen = Minecraft.getInstance().gui.screen();
             if (screen == null) return false;
             if (screen instanceof CreativeModeInventoryScreen creativeScreen) {
                 return creativeScreen.searchBox.canConsumeInput();

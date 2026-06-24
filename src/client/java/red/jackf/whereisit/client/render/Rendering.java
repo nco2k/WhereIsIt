@@ -1,5 +1,6 @@
 package red.jackf.whereisit.client.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.fabricmc.fabric.api.client.rendering.v1.InvalidateRenderStateCallback;
@@ -8,8 +9,12 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.font.TextRenderable;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.StagedVertexBuffer;
+import net.minecraft.client.renderer.rendertype.PreparedRenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -39,6 +44,7 @@ public class Rendering {
     private static final Map<Integer, SearchResult> entityResults = new HashMap<>();
     private static final List<ScheduledLabel> scheduledLabels = new ArrayList<>();
     private static final int FULL_BRIGHT = 0x00F000F0;
+    private static final StagedVertexBuffer STAGED_BUFFER = new StagedVertexBuffer(() -> "WhereIsIt", 262144);
 
     private record ScheduledLabel(Vec3 position, Component text, boolean seeThrough) {}
 
@@ -88,6 +94,18 @@ public class Rendering {
         return namedResults;
     }
 
+    public static void renderWorld(Camera camera, float tickDelta) {
+        DrawCollector drawCollector = new DrawCollector();
+
+        try {
+            renderBoxes(camera, tickDelta, drawCollector);
+            renderEntityHighlights(camera, tickDelta, drawCollector);
+            renderLabels(camera, drawCollector);
+            drawCollector.draw();
+        } finally {
+            STAGED_BUFFER.endFrame();
+        }
+    }
     // ----------------------------
     // SLOT HIGHLIGHTING (in AbstractContainerScreenMixin Mixin)
     // ----------------------------
@@ -149,7 +167,7 @@ public class Rendering {
         return compatibility.disableOwnContainerNameLabelsWhenChestTrackerLoaded && CHESTTRACKER_LOADED;
     }
 
-    public static void renderLabels(PoseStack ignoredPoseStack, Camera camera, MultiBufferSource consumers) {
+    public static void renderLabels(Camera camera, DrawCollector drawCollector) {
         if (disableOwnContainerNameLabelsWhenChestTrackerLoaded()) {
             namedResults.clear();
         }
@@ -158,7 +176,7 @@ public class Rendering {
                 && WhereIsItConfig.INSTANCE.instance().getClient().showContainerNamesInResults
                 && !disableOwnContainerNameLabelsWhenChestTrackerLoaded()) {
             for (SearchResult value : namedResults.values()) {
-                scheduleLabel(value.pos().getCenter().add(value.nameOffset()), value.name(),
+                scheduleLabel(Vec3.atBottomCenterOf(value.pos()).add(value.nameOffset()), value.name(),
                         WhereIsItConfig.INSTANCE.instance().getCommon().debug.labelsAreSeeThrough);
             }
         }
@@ -174,12 +192,12 @@ public class Rendering {
 
         scheduledLabels.stream()
                 .sorted(Comparator.comparingDouble(label -> -camPos.distanceToSqr(label.position)))
-                .forEach(label -> renderLabel(label, pose, camera, camPos, consumers));
+                .forEach(label -> renderLabel(label, pose, camera, camPos, drawCollector));
 
         scheduledLabels.clear();
     }
 
-    private static void renderLabel(ScheduledLabel label, PoseStack pose, Camera camera, Vec3 camPos, MultiBufferSource consumers) {
+    private static void renderLabel(ScheduledLabel label, PoseStack pose, Camera camera, Vec3 camPos, DrawCollector drawCollector) {
         pose.pushPose();
 
         // Offset from the camera
@@ -200,21 +218,34 @@ public class Rendering {
         float x = -width / 2f;
 
         // Background
-        VertexConsumer bgBuffer = consumers.getBuffer(WhereIsItPipelines.TEXT_BACKGROUND_NO_DEPTH);
         int bgColour = ((int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25F) * 255F)) << 24;
-        bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
-        bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
-        bgBuffer.addVertex(matrix, x + width, 10f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
-        bgBuffer.addVertex(matrix, x + width, -1f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
-
-        //GL11.glDisable(GL11.GL_DEPTH_TEST);
-        //GL11.glDepthFunc(GL11.GL_ALWAYS);
+        if (bgColour != 0) {
+            RenderType backgroundType = label.seeThrough ? RenderTypes.textBackgroundSeeThrough() : RenderTypes.textBackground();
+            VertexConsumer bgBuffer = drawCollector.getBuffer(backgroundType);
+            bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
+            bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
+            bgBuffer.addVertex(matrix, x + width, 10f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
+            bgBuffer.addVertex(matrix, x + width, -1f, 0).setColor(bgColour).setLight(FULL_BRIGHT);
+        }
 
         Font.DisplayMode mode = Font.DisplayMode.SEE_THROUGH;
-        Minecraft.getInstance().font.drawInBatch(label.text, x, 0, 0xFFFFFFFF, false, matrix, consumers, mode, 0, FULL_BRIGHT);
+        Font.PreparedText preparedText = Minecraft.getInstance().font.prepareText(
+                label.text.getVisualOrderText(),
+                x,
+                0,
+                0xFFFFFFFF,
+                false,
+                false,
+                0
+        );
 
-        //GL11.glDepthFunc(GL11.GL_LEQUAL);
-        //GL11.glEnable(GL11.GL_DEPTH_TEST);
+        preparedText.visit(new Font.GlyphVisitor() {
+            @Override
+            public void acceptRenderable(TextRenderable renderable) {
+                VertexConsumer buffer = drawCollector.getBuffer(renderable.renderType(mode));
+                renderable.render(matrix, buffer, FULL_BRIGHT, false);
+            }
+        });
 
         pose.popPose();
     }
@@ -222,7 +253,7 @@ public class Rendering {
     // ----------------------------
     // ENTITY HIGHLIGHT RENDERING
     // ----------------------------
-    public static void renderEntityHighlights(MultiBufferSource.BufferSource bufferSource, Camera camera, float tickDelta) {
+    public static void renderEntityHighlights(Camera camera, float tickDelta, DrawCollector drawCollector) {
         if (entityResults.isEmpty()) return;
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -234,7 +265,7 @@ public class Rendering {
         pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
         pose.mulPose(Axis.YP.rotationDegrees(camera.yRot() - 180f));
 
-        VertexConsumer consumer = bufferSource.getBuffer(DEBUG_QUADS_NO_DEPTH);
+        VertexConsumer consumer = drawCollector.getBuffer(DEBUG_QUADS_NO_DEPTH);
 
         float progress = getRenderingProgress(tickDelta);
         int rgbColor = CurrentGradientHolder.getColour(getBaseProgress(ticksSinceSearch, tickDelta));
@@ -265,17 +296,16 @@ public class Rendering {
     // ----------------------------
     // BLOCK BOX RENDERING (FILLED CUBES)
     // ----------------------------
-    public static void renderBoxes(MultiBufferSource.BufferSource bufferSource, Camera camera, float tickDelta) {
+    public static void renderBoxes(Camera camera, float tickDelta, DrawCollector drawCollector) {
         if (results.isEmpty()) return;
 
         Vec3 camPos = camera.position();
 
-        // Create a new PoseStack and apply camera rotation
         PoseStack pose = new PoseStack();
         pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
         pose.mulPose(Axis.YP.rotationDegrees(camera.yRot() - 180f));
 
-        VertexConsumer consumer = bufferSource.getBuffer(DEBUG_QUADS_NO_DEPTH);
+        VertexConsumer consumer = drawCollector.getBuffer(DEBUG_QUADS_NO_DEPTH);
 
         // Get progress for RGB animation
         float progress = getRenderingProgress(tickDelta);
@@ -303,8 +333,6 @@ public class Rendering {
                 renderBox(camPos, otherPos, consumer, pose, r, g, b, alpha, scale);
             }
         }
-
-        bufferSource.endBatch(DEBUG_QUADS_NO_DEPTH);
     }
 
     // Rendering progress for fadeout
@@ -428,5 +456,41 @@ public class Rendering {
         consumer.addVertex(matrix, 1, -1, 1).setColor(color);
 
         pose.popPose();
+    }
+
+    private static final class DrawCollector {
+        private final List<StagedVertexBuffer.Draw> draws = new ArrayList<>();
+        private final List<PreparedRenderType> preparedRenderTypes = new ArrayList<>();
+        @Nullable private RenderType lastRenderType;
+        @Nullable private StagedVertexBuffer.Draw lastDraw;
+
+        private VertexConsumer getBuffer(RenderType renderType) {
+            if (lastDraw == null || lastRenderType != renderType || !renderType.canConsolidateConsecutiveGeometry()) {
+                lastDraw = createDraw(renderType);
+                lastRenderType = renderType;
+            }
+
+            return STAGED_BUFFER.getVertexBuilder(lastDraw);
+        }
+
+        private StagedVertexBuffer.Draw createDraw(RenderType renderType) {
+            PreparedRenderType preparedRenderType = renderType.prepare();
+            VertexSorting quadSorting = renderType.sortOnUpload() ? RenderSystem.getProjectionType().vertexSorting() : null;
+            StagedVertexBuffer.Draw draw = STAGED_BUFFER.appendDraw(renderType.format(), renderType.primitiveTopology(), quadSorting);
+            draws.add(draw);
+            preparedRenderTypes.add(preparedRenderType);
+            return draw;
+        }
+
+        private void draw() {
+            STAGED_BUFFER.upload();
+
+            for (int i = 0; i < draws.size(); i++) {
+                StagedVertexBuffer.ExecuteInfo executeInfo = STAGED_BUFFER.getExecuteInfo(draws.get(i));
+                if (executeInfo != null) {
+                    preparedRenderTypes.get(i).drawFromBuffer(executeInfo);
+                }
+            }
+        }
     }
 }

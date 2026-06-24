@@ -18,6 +18,7 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.TeamColor;
 import org.joml.Vector3f;
 import red.jackf.jackfredlib.api.colour.Colour;
 import red.jackf.jackfredlib.api.lying.Debris;
@@ -31,6 +32,7 @@ import red.jackf.whereisit.api.SearchResult;
 import red.jackf.whereisit.config.WhereIsItConfig;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static net.minecraft.SharedConstants.TICKS_PER_SECOND;
 
@@ -88,7 +90,7 @@ public class ServerSideRenderer {
         int bestDistance = Integer.MAX_VALUE;
 
         for (ChatFormatting candidate : ENTITY_GLOW_COLOURS) {
-            Integer candidateRgb = candidate.getColor();
+            Integer candidateRgb = Colour.getColor(candidate);
             if (candidateRgb == null) continue;
 
             int cr = (candidateRgb >> 16) & 0xFF;
@@ -181,7 +183,9 @@ public class ServerSideRenderer {
                 long expiresAt = level.getGameTime() + timeoutTicks;
                 ChatFormatting glowColour = toClosestEntityGlowColour(colour);
                 PlayerTeam fakeTeam = new PlayerTeam(FAKE_TEAM_SCOREBOARD, nextEntityTeamName(entityId));
-                fakeTeam.setColor(glowColour);
+                // 1. Получаем цвет как TeamColor (используя наш исправленный метод)
+                TeamColor teamColor = convertFormattingToTeamColor(glowColour);
+                fakeTeam.setColor(Optional.of(teamColor));
                 String entityKey = entity.getScoreboardName();
 
                 player.connection.send(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(fakeTeam, true));
@@ -237,5 +241,11 @@ public class ServerSideRenderer {
                 Debris.INSTANCE.schedule(proxy, timeoutTicks);
             }
         }
+    }
+    private static TeamColor convertFormattingToTeamColor(ChatFormatting formatting) {
+        if (formatting == null) return TeamColor.WHITE; // Дефолтный цвет
+
+        TeamColor color = TeamColor.byName(formatting.name());
+        return color != null ? color : TeamColor.WHITE;
     }
 }

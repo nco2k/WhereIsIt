@@ -113,7 +113,7 @@ public class WhereIsItClient implements ClientModInitializer {
                 clearResults();
             }
 
-            if (Minecraft.getInstance().screen == null && SEARCH.consumeClick()) {
+            if (Minecraft.getInstance().gui.screen() == null && SEARCH.consumeClick()) {
                 var player = Minecraft.getInstance().player;
                 if (player == null) return;
                 ItemStack item = player.getItemInHand(InteractionHand.MAIN_HAND);
@@ -160,7 +160,7 @@ public class WhereIsItClient implements ClientModInitializer {
 
         if (WhereIsItConfig.INSTANCE.instance().getClient().closeGuiOnFoundResults && !closedScreenThisSearch) {
             closedScreenThisSearch = true;
-            if (Minecraft.getInstance().screen != null && Minecraft.getInstance().player != null)
+            if (Minecraft.getInstance().gui.screen() != null && Minecraft.getInstance().player != null)
                 Minecraft.getInstance().player.closeContainer();
         }
         OnResult.EVENT.invoker().onResults(results);

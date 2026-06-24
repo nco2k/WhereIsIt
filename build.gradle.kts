@@ -9,7 +9,7 @@ import red.jackf.UpdateDependenciesTask
 
 plugins {
     id("maven-publish")
-    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
     id("com.github.breadmoirai.github-release") version "2.4.1"
     id("org.ajoberstar.grgit") version "5.2.1"
     id("me.modmuss50.mod-publish-plugin") version "0.3.3"
@@ -177,22 +177,23 @@ dependencies {
 
     // Recipe Viewer APIs
     // https://github.com/mezz/JustEnoughItems/issues/2891
-    // modCompileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-common-api:${properties["jei_version"]}")
-    // modCompileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-fabric-api:${properties["jei_version"]}")
+    compileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-common-api:${properties["jei_version"]}")
+    compileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-fabric-api:${properties["jei_version"]}")
     compileOnly("maven.modrinth:jei:${properties["jei_modrinth_id"]}")
+    compileOnlyApi("dev.architectury:architectury-fabric:21.0.2")
 
-    // compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${properties["rei_version"]}")
-    // compileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${properties["rei_version"]}")
-    // compileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}")
+    compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${properties["rei_version"]}")
+    compileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${properties["rei_version"]}")
+    compileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}")
 
     //compileOnly("dev.emi:emi-fabric:${properties["emi_version"]}:api")
     // compileOnly("dev.emi:emi-fabric:${properties["emi_version"]}")
 
     // Recipe Viewer Runtimes
     localRuntime("mezz.jei:jei-${properties["minecraft_version"]}-fabric:${properties["jei_version"]}")
-    /*modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}") {
+    localRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${properties["rei_version"]}") {
         exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
-    }*/
+    }
     //modLocalRuntime("dev.emi:emi-fabric:${properties["emi_version"]}")
 }
 
@@ -229,7 +230,7 @@ tasks.jar {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"]!!)
+            from(components["java"])
 
             pom {
                 name.set(project.properties["mod_name"].toString())
@@ -309,7 +310,7 @@ if (canPublish) {
 
     val changelogTextProvider = if (generateChangelogTask != null) {
         provider {
-            generateChangelogTask!!.get().changelogFile.get().asFile.readText()
+            generateChangelogTask.get().changelogFile.get().asFile.readText()
         }
     } else {
         provider {

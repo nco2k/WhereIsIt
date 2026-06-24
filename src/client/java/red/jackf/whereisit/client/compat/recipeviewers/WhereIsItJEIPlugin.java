@@ -1,6 +1,7 @@
 package red.jackf.whereisit.client.compat.recipeviewers;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -19,7 +20,8 @@ import red.jackf.whereisit.client.api.events.ShouldIgnoreKey;
 import red.jackf.whereisit.client.compat.CompatUtils;
 import red.jackf.whereisit.config.WhereIsItConfig;
 
-public final class WhereIsItJEIPlugin implements IModPlugin {
+@JeiPlugin
+public final class WhereIsItJEIPlugin  implements IModPlugin {
     private boolean hasErrored = false;
     private boolean setup = false;
     private IJeiRuntime runtime = null;

@@ -6,7 +6,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import red.jackf.jackfredlib.api.base.ResultHolder;
 import red.jackf.whereisit.api.SearchRequest;
 import red.jackf.whereisit.api.SearchResult;
@@ -63,7 +63,7 @@ public class DefaultBlockSearchers {
         BlockSearcher.EVENT.register(BlockSearcher.DEFAULT, ((request, player, level, state, pos) -> {
             if (!WhereIsItConfig.INSTANCE.instance().getCommon().debug.enableDefaultSearchers) return ResultHolder.pass();
             if (!state.is(BlockTags.SHULKER_BOXES)) return ResultHolder.pass();
-            var shulkerBoxBe = level.getBlockEntity(pos, BlockEntityType.SHULKER_BOX);
+            var shulkerBoxBe = level.getBlockEntity(pos, BlockEntityTypes.SHULKER_BOX);
             if (shulkerBoxBe.isEmpty()) return ResultHolder.pass();
             var fakeItem = new ItemStack(state.getBlock().asItem());
             if (shulkerBoxBe.get().getCustomName() != null)
