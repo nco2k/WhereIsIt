@@ -177,10 +177,10 @@ dependencies {
 
     // Recipe Viewer APIs
     // https://github.com/mezz/JustEnoughItems/issues/2891
-    compileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-common-api:${properties["jei_version"]}")
-    compileOnlyApi("mezz.jei:jei-${properties["minecraft_version"]}-fabric-api:${properties["jei_version"]}")
+    compileOnly("mezz.jei:jei-${properties["minecraft_version"]}-common-api:${properties["jei_version"]}")
+    compileOnly("mezz.jei:jei-${properties["minecraft_version"]}-fabric-api:${properties["jei_version"]}")
     compileOnly("maven.modrinth:jei:${properties["jei_modrinth_id"]}")
-    compileOnlyApi("dev.architectury:architectury-fabric:21.0.2")
+    compileOnly("dev.architectury:architectury-fabric:21.0.2")
 
     compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${properties["rei_version"]}")
     compileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${properties["rei_version"]}")
@@ -367,7 +367,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("jei", "modmenu").forEach {
+                    listOf("jei", "roughly-enough-items", "modmenu").forEach {
                         optional {
                             slug.set(it)
                         }
@@ -387,7 +387,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("jei", "modmenu").forEach {
+                    listOf("jei", "rei", "modmenu").forEach {
                         optional {
                             slug.set(it)
                         }
